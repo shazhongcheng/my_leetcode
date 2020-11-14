@@ -1,4 +1,3 @@
-//  7. 整数反转
 #include <iostream>
 #include <string>
 #include <algorithm>

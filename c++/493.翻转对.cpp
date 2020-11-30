@@ -9,57 +9,57 @@
 #include <stack>
 using namespace std;
 
-
+#define frop(i,s,n) for(int i=(s);i<(n);i++) 
 class Solution {
 public:
-	vector<int> tmp;
-	int reversePairs(vector<int>& nums) {
-		int n=nums.size();
-		tmp.reserve(n);
-		//不包括右边界 
-		return merge_sort(nums,0,n);
+	string reorganizeString(string S) {
+		//记录字母数并降序排列
+		//记录26个字母的键值对 
+		vector<pair<char,int> > h(26,make_pair('a',0));
+		//初始化键 
+		for(int i=0;i<26;i++){
+			h[i].first+=i;
+		}
+		//对字符串的字符进行记录 
+		for(auto p:S)
+			h[p-'a'].second++;
+		//降序排序 
+		sort(h.begin(),h.end(),[](pair<char,int> a,pair<char,int> b){
+			return a.second>b.second;
+		});
+		 
+		//判断是否能够重构 最多的字符不能超过一半 
+		if(h[0].second>(S.size()+1)/2)
+			return "";
+		
+		//答案有size个字符串拼接而成，轮转排入。
+		//按照出现次数最多的字符，来构建相等数目的字符串
+		//之后其他字符全部按照轮转往后面放 
+		int size=h[0].second;
+		vector<string> ans(size);
+		int l=0;
+		frop(i,0,26){
+			int n=h[i].second;
+			frop(j,0,n){
+				ans[l++%size].push_back(h[i].first);
+//				for(auto p:ans){
+//					cout<<p<<" ";
+//				}
+//				cout<<endl;
+			}
+		}
+		string res;
+		frop(i,0,size){
+			res+=ans[i];
+		}
+		return res;
     }
-    
-    int merge_sort(vector<int>& nums,int l,int r){
-    	// 只有一个，就返回0 
-    	if(r-l<=1) return 0;
-    	// 计算中间值 
-    	int mid=l+(r-l)/2;
-    	// 归并 返回的count 为左边的符合条件的值 和 右边符合条件的值的和 
-    	int count=merge_sort(nums,l,mid)+merge_sort(nums,mid,r);
-    	int j=mid;
-    	//计算当前左边序列中，在右边序列中符合条件的值，要完成这一点，就需要顺便对nums的左边和右边排序
-		// i < j 且 nums[i] > 2*nums[j] 的值 
-    	// 双重 
-    	for(int i=l;i<mid;++i){
-    		while(j<r && nums[i]/2.0 > (double)nums[j]){
-    			++j;
-			}
-			count=count+j-mid;
-		}
-		// 进行归并排序 
-		int pos=l,l1=l,l2=mid;
-		while(l1<mid && l2<r){
-			if(nums[l1]<nums[l2]){
-				tmp[pos++] = nums[l1++];
-			}else{
-				tmp[pos++]=nums[l2++];
-			}
-		}
-		while(l1<mid)tmp[pos++]=nums[l1++];
-		while(l2<r)tmp[pos++]=nums[l2++];
-		for(int i=l;i<r;++i){
-			nums[i]=tmp[i];
-		}
-		return count;
-	}
 };
 
 
 int main(){
-	vector<int> nums={1,3,2,3,1};
 	Solution s=Solution(); 
-	int  res = s.reversePairs(nums);
+	string  res = s.reorganizeString("aabccddee");
 	cout<<res;
 	
 	return 0;
